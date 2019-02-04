@@ -2,20 +2,17 @@ require 'pry'
 
 class Recipe
 
-  attr_accessor :name
-  attr_reader :ingredient
+  attr_accessor :name, :ingredient
+  # attr_reader :ingredient
 
   @@all = []
 
   def initialize(name)
     @name = name
-    @ingredient = []
+    # @ingredient = []
     @@all << self
   end
 
-  def ingredient= (ingredient)
-    @ingredient << ingredient
-  end
 
   def self.all
     @@all

@@ -1,3 +1,4 @@
+require "pry"
 class User
 
   attr_accessor :name
@@ -60,4 +61,14 @@ class User
       recipe_card.user == self
     end.last.recipe
   end
+
+  def safe_recipes
+    self.recipes.reject do |recipe|
+      recipe.ingredients.any? do |ingredient|
+        allergens.include?(ingredient)
+      end
+    end
+  end
+
+
 end
