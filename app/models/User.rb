@@ -28,8 +28,7 @@ class User
   end
 
   def top_three_recipes
-    sorted = recipe_cards.sort_by { |recipe_card| -recipe_card.rating }
-    sorted[0,3].map(&:recipe)
+    recipe_cards.max_by(3) { |recipe_card| recipe_card.rating }.map(&:recipe)
   end
 
   def most_recent_recipe
