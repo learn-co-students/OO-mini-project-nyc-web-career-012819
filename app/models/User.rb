@@ -4,29 +4,25 @@ class User
 
   @@all = []
 
-  def self.all
-    @@all
-  end
-
   def initialize(name)
     @name = name
     @@all << self
   end
 
-  def recipecards
-    RecipeCard.all.select do |recipecard|
-      recipecard.user == self
+  def recipes
+    recipe_cards.map do |recipe_card|
+      recipe_card.recipe
     end
   end
 
-  def recipes
-    self.recipecards.map do |recipecard|
-      recipecard.recipe
+  def recipe_cards
+    my_recipe_cards = RecipeCard.all.select do |recipe_card|
+      recipe_card.user == self
     end
   end
 
   def add_recipe_card(recipe, date, rating)
-    RecipeCard.new(date, recipe, self, rating)
+    RecipeCard.new(self, recipe, date, rating)
   end
 
   def declare_allergen(ingredient)
@@ -39,33 +35,39 @@ class User
     end
   end
 
-  def ingredients
-    self.allergens.map do |allergen|
-      allergen.ingredient
-    end
-  end
-
   def top_three_recipes
-    sorted_recipes = self.recipecards.sort_by do |recipecard|
-      recipecard.rating
+    sorted = recipe_cards.sort_by do |recipe_card|
+      -recipe_card.rating
     end
-    recipe_array = sorted_recipes.map do |recipecard|
-      recipecard.recipe
+    sorted[0,3].map do |recipe_card|
+      recipe_card.recipe
     end
-    recipe_array[0..2]
   end
-
 
   def most_recent_recipe
-    recipecard_array = self.recipecards.map do |recipecards|
-      recipecards.date
-    end
-    oldest_date = recipecard_array.sort[-1]
-    most_recent_recipecard = self.recipecards.find do |recipecards|
-      recipecards.date == oldest_date
-    end
-    most_recent_recipecard.recipe
+    recipes.last
   end
 
+  def safe_recipes
+    recipes.select do |recipe|
+      !am_i_allergic?(recipe)
+    end
+  end
 
-end
+  def am_i_allergic?(recipe)
+    allergic_ingredients = allergens.map do |allergen|
+      allergen.ingredient
+    end
+
+    found_ingredient = allergic_ingredients.find do |ingredient|
+      recipe.ingredients.include? (ingredient)
+    end
+
+    !!found_ingredient
+  end
+
+  def self.all
+    @@all
+  end
+
+end #end of User class

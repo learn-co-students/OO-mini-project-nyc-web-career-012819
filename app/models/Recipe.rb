@@ -4,59 +4,29 @@ class Recipe
 
   @@all = []
 
-  def self.all
-    @@all
-  end
-
-  def self.most_popular
-    most_popular_recipe = @@all[0]
-    i = 1
-    while i < @@all.length
-      if @@all[i].users.count > most_popular_recipe.users.count
-        most_popular_recipe = @@all[i]
-      end
-      i += 1
-    end
-    most_popular_recipe
-  end
-
   def initialize(name)
     @name = name
     @@all << self
   end
 
-  def recipecards
-    RecipeCard.all.select do |recipecard|
-      recipecard.recipe == self
-    end
-  end
-
   def users
-    self.recipecards.map do |recipecard|
-      recipecard.user
+    my_recipe_cards = RecipeCard.all.select do |recipe_card|
+      recipe_card.recipe == self
     end
-  end
 
-  def recipeingredients
-    RecipeIngredient.all.select do |recipeingredient|
-      recipeingredient.recipe == self
+    my_recipe_cards.map do |recipe_card|
+      recipe_card.user
     end
   end
 
   def ingredients
-    self.recipeingredients.map do |recipeingredient|
-      recipeingredient.ingredient
+    my_recipe_ingredients = RecipeIngredient.all.select do |recipe_ingredient|
+      recipe_ingredient.recipe == self
     end
-  end
 
-  def allergens
-    allergen_array = []
-    self.ingredients.each do |ingredient|
-      if ingredient.allergens.count > 0
-        allergen_array << ingredient
-      end
+    my_recipe_ingredients.map do |recipe_ingredient|
+      recipe_ingredient.ingredient
     end
-    allergen_array
   end
 
   def add_ingredients(ingredients_array)
@@ -65,4 +35,28 @@ class Recipe
     end
   end
 
-end
+  def self.most_popular
+    frequency_table = RecipeCard.all.inject( {} ) do |hash, recipecard|
+      recipe = recipecard.recipe
+      hash[recipe] == nil ? hash[recipe] = 1 : hash[recipe] += 1
+      hash
+    end
+
+    most_popular_item = frequency_table.max_by do |recipe, frequency|
+      frequency
+    end
+
+    most_popular_item.first
+  end
+
+  def allergens
+    ingredients.select do |ingredient|
+      Allergen.reported_allergens.include?(ingredient)
+    end
+  end
+
+  def self.all
+    @@all
+  end
+
+end #end of class Recipe
