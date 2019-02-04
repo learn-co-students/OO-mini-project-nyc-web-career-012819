@@ -4,21 +4,21 @@ class Allergen
 
   @@all = []
 
+  # INSTANCE METHODS **********************************************
+
   def initialize(user, ingredient)
-    @user = user
-    @ingredient = ingredient
+    @user, @ingredient = user, ingredient
     @@all << self
   end
+
+  # CLASS METHODS **********************************************
 
   def self.all
     @@all
   end
 
-
   def self.reported_allergens
-    @@all.map do |allergen|
-      allergen.ingredient
-    end
+    @@all.map(&:ingredient)
   end
 
 end

@@ -4,59 +4,55 @@ class Recipe
 
   @@all = []
 
+  # INSTANCE METHODS **********************************************
+
   def initialize(name)
     @name = name
     @@all << self
   end
 
   def users
-    my_recipe_cards = RecipeCard.all.select do |recipe_card|
-      recipe_card.recipe == self
-    end
-
-    my_recipe_cards.map do |recipe_card|
-      recipe_card.user
-    end
+    recipe_cards.map(&:user)
   end
 
   def ingredients
-    my_recipe_ingredients = RecipeIngredient.all.select do |recipe_ingredient|
-      recipe_ingredient.recipe == self
-    end
-
-    my_recipe_ingredients.map do |recipe_ingredient|
-      recipe_ingredient.ingredient
-    end
+    recipe_ingredients.map(&:ingredient)
   end
 
   def add_ingredients(ingredients_array)
-    ingredients_array.each do |ingredient|
-      RecipeIngredient.new(self, ingredient)
-    end
-  end
-
-  def self.most_popular
-    frequency_table = RecipeCard.all.inject( {} ) do |hash, recipecard|
-      recipe = recipecard.recipe
-      hash[recipe] == nil ? hash[recipe] = 1 : hash[recipe] += 1
-      hash
-    end
-
-    most_popular_item = frequency_table.max_by do |recipe, frequency|
-      frequency
-    end
-
-    most_popular_item.first
+    ingredients_array.each { |ingredient| RecipeIngredient.new(self, ingredient) }
   end
 
   def allergens
-    ingredients.select do |ingredient|
-      Allergen.reported_allergens.include?(ingredient)
-    end
+    ingredients.select { |ingredient| Allergen.reported_allergens.include?(ingredient) }
   end
+
+  # CLASS METHODS **********************************************
 
   def self.all
     @@all
+  end
+
+  def self.most_popular
+    frequency_table = RecipeCard.all.inject( {} ) do |hash, recipe_card|
+        hash[recipe_card.recipe] == nil ? hash[recipe_card.recipe] = 1 : hash[recipe_card.recipe] += 1
+        hash
+      end
+
+    frequency_table.max_by { |recipe, frequency| frequency }.first
+  end
+
+
+  # PRIVATE METHODS **********************************************
+
+  private
+
+  def recipe_cards
+    RecipeCard.all.select { |recipe_card| recipe_card.recipe == self }
+  end
+
+  def recipe_ingredients
+    RecipeIngredient.all.select { |recipe_ingredient| recipe_ingredient.recipe == self }
   end
 
 end #end of class Recipe

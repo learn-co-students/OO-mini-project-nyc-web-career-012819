@@ -4,21 +4,15 @@ class User
 
   @@all = []
 
+  # INSTANCE METHODS **********************************************
+
   def initialize(name)
     @name = name
     @@all << self
   end
 
   def recipes
-    recipe_cards.map do |recipe_card|
-      recipe_card.recipe
-    end
-  end
-
-  def recipe_cards
-    my_recipe_cards = RecipeCard.all.select do |recipe_card|
-      recipe_card.user == self
-    end
+    recipe_cards.map(&:recipe)
   end
 
   def add_recipe_card(recipe, date, rating)
@@ -30,18 +24,12 @@ class User
   end
 
   def allergens
-    Allergen.all.select do |allergen|
-      allergen.user == self
-    end
+    Allergen.all.select { |allergen| allergen.user == self }.map(&:ingredient)
   end
 
   def top_three_recipes
-    sorted = recipe_cards.sort_by do |recipe_card|
-      -recipe_card.rating
-    end
-    sorted[0,3].map do |recipe_card|
-      recipe_card.recipe
-    end
+    sorted = recipe_cards.sort_by { |recipe_card| -recipe_card.rating }
+    sorted[0,3].map(&:recipe)
   end
 
   def most_recent_recipe
@@ -49,25 +37,26 @@ class User
   end
 
   def safe_recipes
-    recipes.select do |recipe|
-      !am_i_allergic?(recipe)
-    end
+    recipes.select { |recipe| !allergic_to?(recipe) }
   end
 
-  def am_i_allergic?(recipe)
-    allergic_ingredients = allergens.map do |allergen|
-      allergen.ingredient
-    end
-
-    found_ingredient = allergic_ingredients.find do |ingredient|
-      recipe.ingredients.include? (ingredient)
-    end
-
-    !!found_ingredient
+  def allergic_to?(recipe)
+    result = allergens.find { |ingredient| recipe.ingredients.include? (ingredient) }
+    result ? true : false
   end
+
+  # CLASS METHODS **********************************************
 
   def self.all
     @@all
+  end
+
+  # PRIVATE METHODS **********************************************
+
+  private
+
+  def recipe_cards
+    RecipeCard.all.select { |recipe_card| recipe_card.user == self }
   end
 
 end #end of User class

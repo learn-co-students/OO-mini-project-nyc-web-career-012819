@@ -4,20 +4,17 @@ class RecipeCard
 
   @@all = []
 
-  def initialize(user, recipe, date, rating)
-    @user = user
-    @recipe = recipe
-    @date = date
-    @rating = rating
-    @@all << self
+  # INSTANCE METHODS **********************************************
 
+  def initialize(user, recipe, date, rating)
+    @user, @recipe, @date, @rating = user, recipe, date, rating
+    @@all << self
   end
+
+  # CLASS METHODS **********************************************
 
   def self.all
     @@all
   end
-
-
-
 
 end

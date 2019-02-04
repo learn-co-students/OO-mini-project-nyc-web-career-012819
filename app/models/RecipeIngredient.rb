@@ -4,11 +4,14 @@ class RecipeIngredient
 
   @@all = []
 
+  # INSTANCE METHODS **********************************************
+
   def initialize(recipe, ingredient)
-    @recipe = recipe
-    @ingredient = ingredient
+    @recipe, @ingredient = recipe, ingredient
     @@all << self
   end
+
+  # CLASS METHODS **********************************************
 
   def self.all
     @@all
