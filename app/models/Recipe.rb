@@ -19,8 +19,8 @@ class Recipe
     recipe_ingredients.map(&:ingredient)
   end
 
-  def add_ingredients(ingredients_array)
-    ingredients_array.each { |ingredient| RecipeIngredient.new(self, ingredient) }
+  def add_ingredients(new_ingredients)
+    new_ingredients.each { |ingredient| RecipeIngredient.new(self, ingredient) }
   end
 
   def allergens
