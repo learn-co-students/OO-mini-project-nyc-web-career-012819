@@ -27,6 +27,23 @@ tomato = Ingredient.new("tomato")
 cucumber = Ingredient.new("cucumber")
 mint = Ingredient.new("mint")
 
-pizza.users
+chocolate = Ingredient.new("chocolate")
+milk = Ingredient.new("milk")
+caramel = Ingredient.new("caramel")
 
-# binding.pry
+akram.declare_allergen(mint)
+camille.declare_allergen(milk)
+akram.declare_allergen(chocolate)
+camille.declare_allergen(chocolate)
+liza.declare_allergen(chocolate)
+
+
+# pizza.users
+
+recipe_ingredient_1 = RecipeIngredient.new(pizza, dough)
+recipe_ingredient_2 = RecipeIngredient.new(pizza, olive)
+pizza.add_ingredients([tomato, peperoni, mint])
+
+
+# pizza.allergens
+binding.pry
